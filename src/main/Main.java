@@ -30,7 +30,7 @@ public class Main {
 
         writeAuthors(authors);
 
-        generateEdges(edges,authorsMap);
+        generateEdges(edges, authorsMap);
         writeEdges(edges);
     }
 
@@ -110,16 +110,17 @@ public class Main {
         System.out.println("Autori.xlsx written successfully");
     }
 
-    public static void convertToEnglishLatin(String authorsRow){
+    public static String convertToEnglishLatin(String authorsRow) {
         authorsRow = authorsRow.replace("ć", "c");
         authorsRow = authorsRow.replace("č", "c");
         authorsRow = authorsRow.replace("š", "s");
         authorsRow = authorsRow.replace("ž", "z");
         authorsRow = authorsRow.replace("đ", "dj");
         authorsRow = authorsRow.replace("ð", "dj");
+        return authorsRow;
     }
 
-    public static void generateEdges(List<Pair> edges,HashMap<String,Autor> authorsMap){
+    public static void generateEdges(List<Pair> edges, HashMap<String, Autor> authorsMap) {
         try {
             HashSet<String> articles = new HashSet<>();
             File file = new File("resources\\UB_cs_papers_scopus.xlsx");
@@ -140,7 +141,7 @@ public class Main {
                         if (!articles.contains(article)) {
                             articles.add(article);
                             String authorsRow = row.getCell(3).getStringCellValue().toLowerCase();
-                            convertToEnglishLatin(authorsRow);
+                            authorsRow = convertToEnglishLatin(authorsRow);
 
                             String[] possibleAuthors = authorsRow.split(" and ");
 
@@ -154,6 +155,7 @@ public class Main {
 
                                 if (authorsMap.containsKey(a)) {
                                     bgAuthors.add(authorsMap.get(a));
+                                    authorsMap.get(a).addProductivity();
                                 }
                             }
                             for (int i = 0; i < bgAuthors.size() - 1; i++) {
@@ -164,10 +166,12 @@ public class Main {
                                                 p.getSecond().getIme().equalsIgnoreCase(bgAuthors.get(j).getIme())) {
                                             p.addWeight();
                                             found = true;
+                                            break;
                                         } else if (p.getFirst().getIme().equalsIgnoreCase(bgAuthors.get(j).getIme()) &&
                                                 p.getSecond().getIme().equalsIgnoreCase(bgAuthors.get(i).getIme())) {
                                             p.addWeight();
                                             found = true;
+                                            break;
                                         }
                                     }
                                     if (!found) {
@@ -178,10 +182,16 @@ public class Main {
                         }
                     }
                 }
-                for(Pair p:edges){
-                    System.out.println(p.getFirst().getIme()+" "+p.getSecond().getIme()+" "+p.getWeight());
+                for (Pair p : edges) {
+                    System.out.println(p.getFirst().getIme() + " " + p.getSecond().getIme() + " " + p.getWeight());
                 }
                 System.out.println(edges.size());
+
+                Iterator ii = authorsMap.entrySet().iterator();
+                while (ii.hasNext()) {
+                    Autor a = (Autor) ((Map.Entry) ii.next()).getValue();
+                    System.out.println(a.getIme() + " " + a.getProductivity());
+                }
 
             }
         } catch (
