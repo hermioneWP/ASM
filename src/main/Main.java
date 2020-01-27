@@ -48,26 +48,15 @@ public class Main {
                 while (itr.hasNext()) {
                     Row row = itr.next();
 
-                    Cell cell = row.getCell(0);
-                    switch (cell.getCellTypeEnum()) {
-                        case STRING:    //field that represents string cell type
-                            Autor newAuthor = new Autor(id++, (row.getCell(1).getStringCellValue() + " " + cell.getStringCellValue().charAt(0)).toLowerCase());
-                            authors.add(newAuthor);
-                            authorsMap.put(newAuthor.getIme(), newAuthor);
-                            break;
-                        case _NONE:
-                            break;
-                        case NUMERIC:
-                            break;
-                        default:
-                    }
+                    Autor newAuthor = new Autor((row.getCell(1).getStringCellValue() + " " + row.getCell(0).getStringCellValue().charAt(0)).toLowerCase(), id++, row.getCell(4).getStringCellValue(), row.getCell(3).getStringCellValue());
+                    authors.add(newAuthor);
+                    authorsMap.put(newAuthor.getIme(), newAuthor);
                 }
-
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     public static void writeAuthors(List<Autor> authors) {
@@ -86,6 +75,10 @@ public class Main {
         naslov1.setCellValue("Id");
         Cell naslov2 = row.createCell(1);
         naslov2.setCellValue("Label");
+        Cell naslov3 = row.createCell(2);
+        naslov3.setCellValue("Fakultet");
+        Cell naslov4 = row.createCell(3);
+        naslov4.setCellValue("Katedra");
         for (Autor a : authors) {
             row = spreadsheet.createRow(rowid++);
 
@@ -93,11 +86,13 @@ public class Main {
             cell.setCellValue(a.getId() + "");
             Cell cell2 = row.createCell(1);
             cell2.setCellValue((String) a.getIme());
+            Cell cell3 = row.createCell(2);
+            cell3.setCellValue((String) a.getFakultet());
+            Cell cell4 = row.createCell(3);
+            cell4.setCellValue((String) a.getKatedra());
 
         }
 
-
-        //Write the workbook in file system
         try {
             FileOutputStream out = new FileOutputStream(
                     new File("izlazFajlovi\\Autori.xlsx"));
@@ -182,17 +177,6 @@ public class Main {
                         }
                     }
                 }
-                for (Pair p : edges) {
-                    System.out.println(p.getFirst().getIme() + " " + p.getSecond().getIme() + " " + p.getWeight());
-                }
-                System.out.println(edges.size());
-
-                Iterator ii = authorsMap.entrySet().iterator();
-                while (ii.hasNext()) {
-                    Autor a = (Autor) ((Map.Entry) ii.next()).getValue();
-                    System.out.println(a.getIme() + " " + a.getProductivity());
-                }
-
             }
         } catch (
                 Exception e) {
@@ -230,8 +214,6 @@ public class Main {
 
         }
 
-
-        //Write the workbook in file system
         try {
             FileOutputStream out = new FileOutputStream(
                     new File("izlazFajlovi\\Edges.xlsx"));

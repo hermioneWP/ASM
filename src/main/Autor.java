@@ -4,10 +4,13 @@ public class Autor {
     private String ime;
     private int id;
     private int productivity;
+    private String fakultet,katedra;
 
-    public Autor(int id, String ime) {
+    public Autor(String ime, int id, String fakultet, String katedra) {
         this.ime = ime;
         this.id = id;
+        this.fakultet = fakultet;
+        this.katedra = katedra;
         productivity = 0;
     }
 
@@ -37,5 +40,21 @@ public class Autor {
 
     public void addProductivity(){
         productivity++;
+    }
+
+    public String getFakultet() {
+        return fakultet;
+    }
+
+    public void setFakultet(String fakultet) {
+        this.fakultet = fakultet;
+    }
+
+    public String getKatedra() {
+        return katedra;
+    }
+
+    public void setKatedra(String katedra) {
+        this.katedra = katedra;
     }
 }
