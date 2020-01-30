@@ -1,16 +1,18 @@
 package main;
 
-public class Autor {
+public class Autor implements Comparable<Autor> {
     private String ime;
     private int id;
     private int productivity;
-    private String fakultet,katedra;
+    private String fakultet, katedra;
+    private String imePrezime;
 
-    public Autor(String ime, int id, String fakultet, String katedra) {
+    public Autor(String ime, int id, String fakultet, String katedra,String imePrezime) {
         this.ime = ime;
         this.id = id;
         this.fakultet = fakultet;
         this.katedra = katedra;
+        this.imePrezime = imePrezime;
         productivity = 0;
     }
 
@@ -18,27 +20,15 @@ public class Autor {
         return ime;
     }
 
-    public void setIme(String ime) {
-        this.ime = ime;
-    }
-
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public int getProductivity() {
         return productivity;
     }
 
-    public void setProductivity(int productivity) {
-        this.productivity = productivity;
-    }
-
-    public void addProductivity(){
+    public void addProductivity() {
         productivity++;
     }
 
@@ -46,15 +36,16 @@ public class Autor {
         return fakultet;
     }
 
-    public void setFakultet(String fakultet) {
-        this.fakultet = fakultet;
-    }
-
     public String getKatedra() {
         return katedra;
     }
 
-    public void setKatedra(String katedra) {
-        this.katedra = katedra;
+    @Override
+    public int compareTo(Autor autor) {
+        return autor.productivity - productivity;
+    }
+
+    public String getImePrezime() {
+        return imePrezime;
     }
 }

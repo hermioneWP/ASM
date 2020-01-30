@@ -1,7 +1,6 @@
 package main;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -12,13 +11,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
-import java.nio.file.Paths;
 import java.util.*;
-
-import static org.apache.poi.ss.usermodel.CellType.*;
-import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 public class Main {
 
@@ -32,7 +25,16 @@ public class Main {
 
         generateEdges(edges, authorsMap);
         writeEdges(edges);
+
+        Autor[] arrayAutor = new Autor[authorsMap.size()];
+
+        sortByProductivity(authorsMap,arrayAutor);
+        writeProductivity(arrayAutor);
+
+
     }
+
+
 
     public static void generateAuthors(List<Autor> authors, HashMap<String, Autor> authorsMap) {
         try {
@@ -47,8 +49,11 @@ public class Main {
                 Row row2 = itr.next();
                 while (itr.hasNext()) {
                     Row row = itr.next();
-
-                    Autor newAuthor = new Autor((row.getCell(1).getStringCellValue() + " " + row.getCell(0).getStringCellValue().charAt(0)).toLowerCase(), id++, row.getCell(4).getStringCellValue(), row.getCell(3).getStringCellValue());
+                    String ime = row.getCell(1).getStringCellValue();
+                    ime = Character.toUpperCase(ime.charAt(0))+ime.substring(1);
+                    String prezime = row.getCell(0).getStringCellValue();
+                    prezime = Character.toUpperCase(prezime.charAt(0))+prezime.substring(1);
+                    Autor newAuthor = new Autor((row.getCell(1).getStringCellValue() + " " + row.getCell(0).getStringCellValue().charAt(0)).toLowerCase(), id++, row.getCell(4).getStringCellValue(), row.getCell(3).getStringCellValue(),ime + " " + prezime);
                     authors.add(newAuthor);
                     authorsMap.put(newAuthor.getIme(), newAuthor);
                 }
@@ -217,6 +222,67 @@ public class Main {
         try {
             FileOutputStream out = new FileOutputStream(
                     new File("izlazFajlovi\\Edges.xlsx"));
+            workbook.write(out);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Edges.xlsx written successfully");
+    }
+
+    public static void sortByProductivity(Map<String, Autor> authorsMap,Autor[] arrayAutor) {
+        Iterator it = authorsMap.entrySet().iterator();
+        int index = 0;
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            arrayAutor[index++] = (Autor) pair.getValue();
+        }
+
+        Arrays.sort(arrayAutor);
+
+        for (Autor a : arrayAutor) {
+            System.out.println(a.getImePrezime() + " " + a.getProductivity());
+        }
+    }
+
+    private static void writeProductivity(Autor[] arrayAutor) {
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        //Create a blank sheet
+        XSSFSheet spreadsheet = workbook.createSheet("Productivity");
+
+        //Create row object
+        XSSFRow row = null;
+
+        //Iterate over data and write to sheet
+        int rowid = 0;
+        row = spreadsheet.createRow(rowid++);
+        Cell naslov1 = row.createCell(0);
+        naslov1.setCellValue("Ime i prezime");
+        Cell naslov2 = row.createCell(1);
+        naslov2.setCellValue("Broj radova");
+        Cell naslov3 = row.createCell(2);
+        naslov3.setCellValue("Fakultet");
+        Cell naslov4 = row.createCell(3);
+        naslov4.setCellValue("Katedra");
+        for (Autor a:arrayAutor) {
+            row = spreadsheet.createRow(rowid++);
+
+            Cell cell = row.createCell(0);
+            cell.setCellValue(a.getImePrezime());
+            Cell cell2 = row.createCell(1);
+            cell2.setCellValue(a.getProductivity());
+            Cell cell3 = row.createCell(2);
+            cell3.setCellValue(a.getFakultet());
+            Cell cell4 = row.createCell(3);
+            cell4.setCellValue(a.getKatedra());
+
+        }
+
+        try {
+            FileOutputStream out = new FileOutputStream(
+                    new File("izlazFajlovi\\Answers.xlsx"));
             workbook.write(out);
             out.close();
         } catch (IOException e) {
